@@ -1,0 +1,7 @@
+sample-id,absolute-filepath,direction
+sample1,/path/to/sample1_R1.fastq.gz,forward
+sample1,/path/to/sample1_R2.fastq.gz,reverse
+sample2,/path/to/sample2_R1.fastq.gz,forward
+sample2,/path/to/sample2_R2.fastq.gz,reverse
+sample3,/path/to/sample3_R1.fastq.gz,forward
+sample3,/path/to/sample3_R2.fastq.gz,reverse

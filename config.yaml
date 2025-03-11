@@ -1,0 +1,32 @@
+# QIIME2 16S rRNA V3-V4 Metagenomics Pipeline Configuration
+
+# Input/output settings
+manifest_file: "manifest.csv"  # Path to manifest file with sample information
+metadata_file: "metadata.tsv"  # Path to metadata file
+output_dir: "results"          # Main output directory
+input_type: "SampleData[PairedEndSequencesWithQuality]"  # QIIME2 input type
+
+# Primer settings for V3-V4 region
+v3v4_forward_primer: "CCTACGGGNGGCWGCAG"       # 341F V3-V4 forward primer
+v3v4_reverse_primer: "GACTACHVGGGTATCTAATCC"   # 805R V3-V4 reverse primer
+
+# DADA2 parameters
+dada2_trim_left_f: 0           # Trim bases from start of forward reads
+dada2_trim_left_r: 0           # Trim bases from start of reverse reads
+dada2_trunc_len_f: 250         # Truncate forward reads at position
+dada2_trunc_len_r: 200         # Truncate reverse reads at position
+
+# Deblur parameters
+deblur_trim_length: 250        # Length to trim sequences to
+
+# Diversity analysis parameters
+diversity_sampling_depth: 10000 # Rarefaction depth for diversity analyses
+group_column: "treatment"      # Column in metadata file for group comparisons
+
+# Differential abundance parameters
+ancom_taxa_level: 6            # Taxonomic level for ANCOM (6 = genus)
+deseq2_control_group: "control" # Control group name for DESeq2 analysis
+
+# General parameters
+threads: 8                     # Number of threads to use for parallel processing
+

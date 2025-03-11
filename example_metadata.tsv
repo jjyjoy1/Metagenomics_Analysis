@@ -1,0 +1,10 @@
+#SampleID	treatment	replicate
+sample1	control	1
+sample2	control	2
+sample3	control	3
+sample4	treatment_A	1
+sample5	treatment_A	2
+sample6	treatment_A	3
+sample7	treatment_B	1
+sample8	treatment_B	2
+sample9	treatment_B	3
