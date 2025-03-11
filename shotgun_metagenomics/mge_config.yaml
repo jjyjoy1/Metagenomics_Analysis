@@ -1,0 +1,42 @@
+# Mobile Genetic Elements Analysis Pipeline Configuration
+
+# Manifest file with sample information (can be the same as main pipeline)
+manifest_file: "manifest.csv"
+
+# Database paths
+plasmidfinder_db: "/path/to/plasmidfinder_db"
+platon_db: "/path/to/platon_db"
+vibrant_db: "/path/to/vibrant_db"
+phigaro_config: "/path/to/phigaro/config.yml"
+transposon_db: "/path/to/transposon_db.dmnd"
+insertion_sequence_db: "/path/to/is_db"
+integron_finder_db: "/path/to/integron_finder_db"
+
+# Assemblies from main pipeline
+assembly_dir: "results/assembly"
+
+# Thresholds
+min_identity: 80
+min_coverage: 80
+min_evalue: 1e-10
+
+# MGE-specific settings
+min_plasmid_length: 1000
+min_phage_length: 5000
+min_transposon_length: 500
+min_is_length: 700
+
+# Threads to use for tools
+threads: 8
+
+# Analysis parameters
+target_pathogens:
+  - "Escherichia coli"
+  - "Klebsiella pneumoniae"
+  - "Clostridioides difficile"
+  - "Staphylococcus aureus"
+  - "Pseudomonas aeruginosa"
+  - "Acinetobacter baumannii"
+
+# Visualization settings
+top_mge_count: 30  # Number of top MGEs to visualize

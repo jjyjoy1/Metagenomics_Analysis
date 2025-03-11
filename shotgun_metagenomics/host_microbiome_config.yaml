@@ -1,0 +1,48 @@
+# Host-Microbiome Interactions Pipeline Configuration
+
+# Manifest file with sample information (can be the same as main pipeline)
+manifest_file: "manifest.csv"
+
+# Sample metadata file (contains clinical/phenotypic information)
+sample_metadata: "sample_metadata.csv"
+
+# Host genome references
+host_genome: "/path/to/host_reference/genome.fa"
+host_transcriptome: "/path/to/host_reference/transcriptome_index"
+tx2gene_map: "/path/to/host_reference/tx2gene.csv"
+
+# Database files
+interaction_db: "/path/to/host_microbe_interaction_db"
+
+# Include RNA-seq analysis
+include_rnaseq: true
+
+# Include functional profiling from HUMAnN3 pipeline
+include_functional: true
+
+# Differential expression settings (for RNA-seq)
+deseq2_design: "~ condition"
+group_column: "condition"  # Column in sample_metadata for grouping
+
+# Gene catalog settings
+gene_catalog_identity: 0.95  # 95% sequence identity
+gene_catalog_coverage: 0.90  # 90% sequence coverage
+
+# Threads to use for tools
+threads: 16
+
+# Analysis specific settings
+target_species:
+  - "Clostridioides difficile"
+  - "Escherichia coli"
+  - "Bacteroides fragilis"
+  - "Faecalibacterium prausnitzii"
+  - "Akkermansia muciniphila"
+
+# Map of sample types (optional)
+sample_types:
+  "stool": "gut microbiome"
+  "respiratory": "respiratory microbiome"
+  "skin": "skin microbiome"
+  "oral": "oral microbiome"
+  "blood": "blood microbiome"

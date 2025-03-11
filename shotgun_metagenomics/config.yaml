@@ -1,0 +1,33 @@
+# Shotgun Metagenomics Pipeline Configuration
+
+# Manifest file with sample information
+manifest_file: "manifest.csv"
+
+# Database paths
+kraken2_db: "/path/to/kraken2_db"
+metaphlan_db: "/path/to/metaphlan_db"
+resfinder_db: "/path/to/resfinder_db"
+deeparg_db: "/path/to/deeparg_db"
+straingst_db: "/path/to/straingst_db"
+
+# Adapter file for trimming
+adapter_file: "/path/to/adapters/TruSeq3-PE.fa"
+
+# Species of interest (for ResFinder)
+species: "ecoli"
+
+# Outbreak tracking configuration
+outbreak_species_of_interest:
+  - "Clostridioides difficile"
+  - "SARS-CoV-2"
+  - "Klebsiella pneumoniae"
+  - "Staphylococcus aureus"
+  - "Pseudomonas aeruginosa"
+  - "Acinetobacter baumannii"
+
+# Minimum sequence similarity for strain clustering
+strain_similarity_threshold: 0.99
+
+# Threads to use for multi-threaded rules
+threads: 16
+

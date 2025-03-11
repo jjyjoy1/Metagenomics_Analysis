@@ -1,0 +1,11 @@
+sample_id,read_dir,collection_date,patient_id,hospital_unit,sample_type
+SAMPLE001,/path/to/sample001,2023-01-15,P12345,ICU,stool
+SAMPLE002,/path/to/sample002,2023-01-16,P12346,Medical,stool
+SAMPLE003,/path/to/sample003,2023-01-16,P12345,ICU,stool
+SAMPLE004,/path/to/sample004,2023-01-18,P12347,Surgical,respiratory
+SAMPLE005,/path/to/sample005,2023-01-20,P12348,ICU,blood
+SAMPLE006,/path/to/sample006,2023-01-21,P12349,Outpatient,stool
+SAMPLE007,/path/to/sample007,2023-01-22,P12350,Medical,respiratory
+SAMPLE008,/path/to/sample008,2023-01-22,P12351,Surgical,wound
+SAMPLE009,/path/to/sample009,2023-01-23,P12345,ICU,stool
+SAMPLE010,/path/to/sample010,2023-01-25,P12352,Medical,stool

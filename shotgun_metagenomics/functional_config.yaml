@@ -1,0 +1,24 @@
+# Functional Profiling Pipeline Configuration
+
+# Manifest file with sample information (can be the same as main pipeline)
+manifest_file: "manifest.csv"
+
+# HUMAnN3 database paths
+humann_nucleotide_db: "/path/to/humann_dbs/chocophlan"
+humann_protein_db: "/path/to/humann_dbs/uniref"
+
+# Utility mapping files
+utility_mapping: "/path/to/humann_dbs/utility_mapping"
+
+# Threads to use for HUMAnN3
+threads: 16
+
+# MetaPhlAn profiles from main pipeline (optional)
+use_metaphlan_from_main_pipeline: True
+metaphlan_dir: "results/metaphlan"
+
+# Top pathways to include in visualization
+top_pathways_count: 25
+
+# Samples to include in visualization (leave empty for all)
+visualization_samples: []  # e.g., ["SAMPLE001", "SAMPLE002"]

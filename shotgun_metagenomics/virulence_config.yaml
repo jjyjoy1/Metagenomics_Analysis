@@ -1,0 +1,33 @@
+# Virulence Factor Detection Pipeline Configuration
+
+# Manifest file with sample information (can be the same as main pipeline)
+manifest_file: "manifest.csv"
+
+# Database paths
+srst2_virulence_db: "/path/to/srst2_db/virulence_factors.fasta"
+vfdb_protein_db: "/path/to/vfdb/VFDB_setA_pro.dmnd"
+
+# Assemblies from main pipeline
+assembly_dir: "results/assembly"
+
+# Trimmed reads from main pipeline
+trimmed_reads_dir: "results/trimmed"
+
+# Target pathogens for virulence analysis
+target_pathogens:
+  - "Clostridioides difficile"
+  - "Escherichia coli"
+  - "Klebsiella pneumoniae"
+  - "Staphylococcus aureus"
+  - "Pseudomonas aeruginosa"
+  - "Acinetobacter baumannii"
+
+# Identity and coverage thresholds
+min_identity: 80
+min_coverage: 80
+
+# Threads to use for tools
+threads: 8
+
+# Visualization settings
+top_virulence_genes: 50  # Number of top virulence genes to visualize
