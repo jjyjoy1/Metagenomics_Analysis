@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1000 1380" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background styles -->
+  <defs>
+    <linearGradient id="headerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1a237e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#283593;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="inputGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0d47a1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1565c0;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="processGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1b5e20;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2e7d32;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="bacterialGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#004d40;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00695c;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="viralGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#bf360c;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d84315;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="aiGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6a1b9a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7b1fa2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="outputGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e65100;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ef6c00;stop-opacity:1" />
+    </linearGradient>
+    <filter id="dropShadow">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+      <feOffset dx="2" dy="2" result="offsetblur" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.3" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#546e7a" />
+    </marker>
+  </defs>
+
+  <!-- Pipeline Title -->
+  <rect x="150" y="20" width="700" height="60" rx="10" ry="10" fill="url(#headerGradient)" filter="url(#dropShadow)" />
+  <text x="500" y="60" text-anchor="middle" font-family="Arial" font-size="24" font-weight="bold" fill="white">
+    Novel Pathogen Detection Pipeline
+  </text>
+
+  <!-- Input Section -->
+  <rect x="300" y="100" width="400" height="50" rx="10" ry="10" fill="url(#inputGradient)" filter="url(#dropShadow)" />
+  <text x="500" y="130" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="white">
+    Metagenomic Reads (FASTQ)
+  </text>
+
+  <!-- Initial Processing Pipeline -->
+  <line x1="500" y1="150" x2="500" y2="180" stroke="#546e7a" stroke-width="3" marker-end="url(#arrow)" />
+  
+  <rect x="300" y="180" width="400" height="50" rx="10" ry="10" fill="url(#processGradient)" filter="url(#dropShadow)" />
+  <text x="500" y="210" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="white">
+    QC &amp; Host Removal
+  </text>
+
+  <line x1="500" y1="230" x2="500" y2="260" stroke="#546e7a" stroke-width="3" marker-end="url(#arrow)" />
+  
+  <rect x="300" y="260" width="400" height="50" rx="10" ry="10" fill="url(#processGradient)" filter="url(#dropShadow)" />
+  <text x="500" y="290" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="white">
+    Assembly (MEGAHIT)
+  </text>
+
+  <line x1="500" y1="310" x2="500" y2="340" stroke="#546e7a" stroke-width="3" marker-end="url(#arrow)" />
+  
+  <rect x="300" y="340" width="400" height="50" rx="10" ry="10" fill="url(#processGradient)" filter="url(#dropShadow)" />
+  <text x="500" y="370" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="white">
+    Read Mapping &amp; Coverage Calculation
+  </text>
+
+  <line x1="500" y1="390" x2="500" y2="420" stroke="#546e7a" stroke-width="3" marker-end="url(#arrow)" />
+  
+  <rect x="300" y="420" width="400" height="50" rx="10" ry="10" fill="url(#processGradient)" filter="url(#dropShadow)" />
+  <text x="500" y="450" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="white">
+    Binning (MetaBAT2) &amp; GraphBin
+  </text>
+
+  <line x1="500" y1="470" x2="500" y2="500" stroke="#546e7a" stroke-width="3" marker-end="url(#arrow)" />
+  
+  <rect x="300" y="500" width="400" height="50" rx="10" ry="10" fill="url(#processGradient)" filter="url(#dropShadow)" />
+  <text x="500" y="530" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="white">
+    Gene Prediction (Prodigal)
+  </text>
+
+  <!-- Split into multiple branches -->
+  <line x1="500" y1="550" x2="500" y2="580" stroke="#546e7a" stroke-width="3" />
+  <line x1="500" y1="580" x2="250" y2="580" stroke="#546e7a" stroke-width="3" />
+  <line x1="500" y1="580" x2="750" y2="580" stroke="#546e7a" stroke-width="3" />
+  <line x1="500" y1="580" x2="500" y2="640" stroke="#546e7a" stroke-width="3" />
+  <line x1="250" y1="580" x2="250" y2="640" stroke="#546e7a" stroke-width="3" marker-end="url(#arrow)" />
+  <line x1="750" y1="580" x2="750" y2="640" stroke="#546e7a" stroke-width="3" marker-end="url(#arrow)" />
+  <line x1="500" y1="640" x2="500" y2="640" stroke="#546e7a" stroke-width="3" marker-end="url(#arrow)" />
+
+  <!-- General Classification Branch -->
+  <rect x="100" y="640" width="300" height="50" rx="10" ry="10" fill="url(#processGradient)" filter="url(#dropShadow)" />
+  <text x="250" y="670" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="white">
+    General Classification
+  </text>
+
+  <line x1="250" y1="690" x2="250" y2="725" stroke="#546e7a" stroke-width="3" />
+  <line x1="250" y1="725" x2="175" y2="725" stroke="#546e7a" stroke-width="3" />
+  <line x1="250" y1="725" x2="325" y2="725" stroke="#546e7a" stroke-width="3" />
+  <line x1="175" y1="725" x2="175" y2="750" stroke="#546e7a" stroke-width="3" marker-end="url(#arrow)" />
+  <line x1="325" y1="725" x2="325" y2="750" stroke="#546e7a" stroke-width="3" marker-end="url(#arrow)" />
+
+  <rect x="100" y="750" width="150" height="40" rx="10" ry="10" fill="#455a64" filter="url(#dropShadow)" />
+  <text x="175" y="775" text-anchor="middle" font-family="Arial" font-size="16" fill="white">
+    CAT/BAT
+  </text>
+
+  <rect x="250" y="750" width="150" height="40" rx="10" ry="10" fill="#455a64" filter="url(#dropShadow)" />
+  <text x="325" y="775" text-anchor="middle" font-family="Arial" font-size="16" fill="white">
+    MMseqs2
+  </text>
+
+  <!-- Bacterial Analysis Branch -->
+  <rect x="350" y="640" width="300" height="50" rx="10" ry="10" fill="url(#bacterialGradient)" filter="url(#dropShadow)" />
+  <text x="500" y="670" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="white">
+    Bacterial Analysis
+  </text>
+
+  <line x1="500" y1="690" x2="500" y2="725" stroke="#546e7a" stroke-width="3" />
+  <line x1="500" y1="725" x2="425" y2="725" stroke="#546e7a" stroke-width="3" />
+  <line x1="500" y1="725" x2="575" y2="725" stroke="#546e7a" stroke-width="3" />
+  <line x1="425" y1="725" x2="425" y2="750" stroke="#546e7a" stroke-width="3" marker-end="url(#arrow)" />
+  <line x1="575" y1="725" x2="575" y2="750" stroke="#546e7a" stroke-width="3" marker-end="url(#arrow)" />
+
+  <rect x="350" y="750" width="150" height="40" rx="10" ry="10" fill="#00695c" filter="url(#dropShadow)" />
+  <text x="425" y="775" text-anchor="middle" font-family="Arial" font-size="16" fill="white">
+    GTDB-Tk
+  </text>
+
+  <rect x="500" y="750" width="150" height="40" rx="10" ry="10" fill="#00695c" filter="url(#dropShadow)" />
+  <text x="575" y="775" text-anchor="middle" font-family="Arial" font-size="16" fill="white">
+    ANI Analysis
+  </text>
+
+  <!-- Viral Analysis Branch -->
+  <rect x="600" y="640" width="300" height="50" rx="10" ry="10" fill="url(#viralGradient)" filter="url(#dropShadow)" />
+  <text x="750" y="670" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="white">
+    Viral Analysis
+  </text>
+
+  <line x1="750" y1="690" x2="750" y2="725" stroke="#546e7a" stroke-width="3" />
+  <line x1="750" y1="725" x2="650" y2="725" stroke="#546e7a" stroke-width="3" />
+  <line x1="750" y1="725" x2="850" y2="725" stroke="#546e7a" stroke-width="3" />
+  <line x1="650" y1="725" x2="650" y2="750" stroke="#546e7a" stroke-width="3" marker-end="url(#arrow)" />
+  <line x1="750" y1="725" x2="750" y2="750" stroke="#546e7a" stroke-width="3" marker-end="url(#arrow)" />
+  <line x1="850" y1="725" x2="850" y2="750" stroke="#546e7a" stroke-width="3" marker-end="url(#arrow)" />
+
+  <rect x="600" y="750" width="100" height="40" rx="10" ry="10" fill="#d84315" filter="url(#dropShadow)" />
+  <text x="650" y="775" text-anchor="middle" font-family="Arial" font-size="16" fill="white">
+    VirSorter2
+  </text>
+
+  <rect x="700" y="750" width="100" height="40" rx="10" ry="10" fill="#d84315" filter="url(#dropShadow)" />
+  <text x="750" y="775" text-anchor="middle" font-family="Arial" font-size="16" fill="white">
+    VIBRANT
+  </text>
+
+  <rect x="800" y="750" width="100" height="40" rx="10" ry="10" fill="#d84315" filter="url(#dropShadow)" />
+  <text x="850" y="775" text-anchor="middle" font-family="Arial" font-size="16" fill="white">
+    DeepVirFinder
+  </text>
+
+  <line x1="650" y1="790" x2="650" y2="810" stroke="#546e7a" stroke-width="3" />
+  <line x1="750" y1="790" x2="750" y2="810" stroke="#546e7a" stroke-width="3" />
+  <line x1="850" y1="790" x2="850" y2="810" stroke="#546e7a" stroke-width="3" />
+  <line x1="650" y1="810" x2="750" y2="810" stroke="#546e7a" stroke-width="3" />
+  <line x1="750" y1="810" x2="850" y2="810" stroke="#546e7a" stroke-width="3" />
+  <line x1="750" y1="810" x2="750" y2="830" stroke="#546e7a" stroke-width="3" marker-end="url(#arrow)" />
+
+  <rect x="675" y="830" width="150" height="40" rx="10" ry="10" fill="#d84315" filter="url(#dropShadow)" />
+  <text x="750" y="855" text-anchor="middle" font-family="Arial" font-size="16" fill="white">
+    CheckV
+  </text>
+
+  <line x1="750" y1="870" x2="750" y2="890" stroke="#546e7a" stroke-width="3" marker-end="url(#arrow)" />
+
+  <rect x="675" y="890" width="150" height="40" rx="10" ry="10" fill="#d84315" filter="url(#dropShadow)" />
+  <text x="750" y="915" text-anchor="middle" font-family="Arial" font-size="16" fill="white">
+    vConTACT2
+  </text>
+
+  <!-- Connect to AI/ML components -->
+  <line x1="175" y1="790" x2="175" y2="960" stroke="#546e7a" stroke-width="3" />
+  <line x1="325" y1="790" x2="325" y2="960" stroke="#546e7a" stroke-width="3" />
+  <line x1="425" y1="790" x2="425" y2="960" stroke="#546e7a" stroke-width="3" />
+  <line x1="575" y1="790" x2="575" y2="960" stroke="#546e7a" stroke-width="3" />
+  <line x1="750" y1="930" x2="750" y2="960" stroke="#546e7a" stroke-width="3" />
+  <line x1="175" y1="960" x2="750" y2="960" stroke="#546e7a" stroke-width="3" />
+  <line x1="500" y1="960" x2="500" y2="980" stroke="#546e7a" stroke-width="3" marker-end="url(#arrow)" />
+
+  <!-- AI/ML Analysis Section -->
+  <rect x="200" y="980" width="600" height="70" rx="10" ry="10" fill="url(#aiGradient)" filter="url(#dropShadow)" />
+  <text x="500" y="1010" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="white">
+    Embedding Generation &amp; Anomaly Detection
+  </text>
+  <text x="500" y="1035" text-anchor="middle" font-family="Arial" font-size="16" fill="white">
+    ESM2, DNABERT, Isolation Forest, VAE, DBSCAN
+  </text>
+
+  <line x1="500" y1="1050" x2="500" y2="1080" stroke="#546e7a" stroke-width="3" marker-end="url(#arrow)" />
+
+  <!-- Integration and Output Section -->
+  <rect x="200" y="1080" width="600" height="60" rx="10" ry="10" fill="url(#outputGradient)" filter="url(#dropShadow)" />
+  <text x="500" y="1110" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="white">
+    Comprehensive Integration &amp; Analysis
+  </text>
+  <text x="500" y="1130" text-anchor="middle" font-family="Arial" font-size="14" fill="white">
+    Cross-validation between methods for novelty detection
+  </text>
+
+  <line x1="500" y1="1140" x2="500" y2="1170" stroke="#546e7a" stroke-width="3" marker-end="url(#arrow)" />
+
+  <!-- Final Results -->
+  <rect x="200" y="1170" width="600" height="100" rx="10" ry="10" fill="#37474f" filter="url(#dropShadow)" />
+  <text x="500" y="1200" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="white">
+    Novel Pathogen Candidates
+  </text>
+  <text x="500" y="1230" text-anchor="middle" font-family="Arial" font-size="14" fill="white">
+    1. Taxonomically divergent bacteria (GTDB-Tk + ANI)
+  </text>
+  <text x="500" y="1250" text-anchor="middle" font-family="Arial" font-size="14" fill="white">
+    2. Unclassified viral clusters (CheckV + vConTACT2)
+  </text>
+  <text x="500" y="1270" text-anchor="middle" font-family="Arial" font-size="14" fill="white">
+    3. Statistical outliers in embedding space (Anomaly Detection)
+  </text>
+
+  <!-- Legend -->
+  <rect x="150" y="1300" width="20" height="20" rx="5" ry="5" fill="url(#processGradient)" />
+  <text x="180" y="1315" font-family="Arial" font-size="14" fill="#37474f">General Processing</text>
+  
+  <rect x="350" y="1300" width="20" height="20" rx="5" ry="5" fill="url(#bacterialGradient)" />
+  <text x="380" y="1315" font-family="Arial" font-size="14" fill="#37474f">Bacterial Analysis</text>
+  
+  <rect x="550" y="1300" width="20" height="20" rx="5" ry="5" fill="url(#viralGradient)" />
+  <text x="580" y="1315" font-family="Arial" font-size="14" fill="#37474f">Viral Analysis</text>
+  
+  <rect x="750" y="1300" width="20" height="20" rx="5" ry="5" fill="url(#aiGradient)" />
+  <text x="780" y="1315" font-family="Arial" font-size="14" fill="#37474f">AI/ML Methods</text>
+
+  <!-- Credits -->
+  <text x="500" y="1350" text-anchor="middle" font-family="Arial" font-size="12" fill="#37474f">
+    Novel Bacteria/Virus Detection from NGS data - Nextflow Pipeline Diagram
+  </text>
+</svg>

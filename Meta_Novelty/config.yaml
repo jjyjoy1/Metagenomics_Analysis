@@ -1,0 +1,40 @@
+# Configuration file for Novel Pathogen Detection Snakemake pipeline
+
+# Sample IDs (without file extensions)
+samples:
+  - "sample1"
+  - "sample2"
+
+# Output directory
+output_dir: "results"
+
+# Threads to use for computation-heavy processes
+threads: 8
+
+# Minimum contig size for downstream analysis
+min_contig_size: 1000
+
+# Reference host genome for host removal
+ref_host: "reference/hg38.fa"
+
+# Database paths
+checkv_db: "/path/to/checkv_db"
+gtdb_db: "/path/to/gtdb_db"
+gtdb_genomes: "/path/to/gtdb_genomes"
+vcontact2_db: "/path/to/vcontact2_db"
+mmseqs2_db: "/path/to/mmseqs2_db/mmseqs2_db"
+
+# Path to DeepVirFinder script
+dvf_script: "/path/to/DeepVirFinder/dvf.py"
+
+# Embedding model parameters
+protein_embedding_model: "esm2"  # Options: esm2, prot_t5, esm1b
+dna_embedding_model: "dnabert"   # Options: dnabert, nucleotide_transformer, k_mer
+
+# Anomaly detection parameters
+anomaly_detection_methods: "isolation_forest,vae,dbscan"  # Comma-separated list of methods to use
+
+metadata: "metadata.csv"
+gene_cluster_identity: 0.95
+gene_cluster_coverage: 0.9
+core_gene_threshold: 0.95
