@@ -1,0 +1,51 @@
+name: metagenomics
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  # Core tools
+  - python=3.9
+  - snakemake=7.25.0
+  - pandas
+  - matplotlib
+  - seaborn
+  - jinja2
+  
+  # Quality control
+  - fastp=0.23.2
+  
+  # Host read removal
+  - bowtie2=2.4.5
+  - samtools=1.16.1
+  
+  # Taxonomic classification
+  - kraken2=2.1.2
+  - bracken=2.7
+  
+  # Functional profiling
+  - humann=3.6
+  - diamond=2.0.15
+  
+  # Assembly
+  - megahit=1.2.9
+  
+  # Binning
+  - metabat2=2.15
+  - das_tool=1.1.5
+  
+  # Bin quality assessment
+  - checkm-genome=1.1.3
+  
+  # Taxonomic placement
+  - gtdbtk=2.1.0
+  
+  # Annotation
+  - prokka=1.14.6
+  
+  # For DRAM installation
+  - pip
+  - pip:
+    - DRAM-bio==1.4.0
+
+

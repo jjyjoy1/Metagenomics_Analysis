@@ -1,0 +1,11 @@
+name: checkv
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - checkv=1.0.1
+  - prodigal=2.6.3
+  - hmmer=3.3.2
+  - diamond=2.1.8
+

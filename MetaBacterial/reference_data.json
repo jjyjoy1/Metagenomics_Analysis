@@ -1,0 +1,23 @@
+{
+  "sample1": {
+    "host_fraction": 0.6,
+    "expected_species": {
+      "Escherichia coli": 0.3,
+      "Staphylococcus aureus": 0.25,
+      "Pseudomonas aeruginosa": 0.2,
+      "Bacillus subtilis": 0.15,
+      "Lactobacillus acidophilus": 0.1
+    }
+  },
+  "sample2": {
+    "host_fraction": 0.45,
+    "expected_species": {
+      "Bacteroides fragilis": 0.4,
+      "Prevotella copri": 0.3,
+      "Faecalibacterium prausnitzii": 0.2,
+      "Bifidobacterium longum": 0.1
+    }
+  }
+}
+
+

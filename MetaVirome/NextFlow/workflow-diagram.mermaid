@@ -1,0 +1,25 @@
+flowchart TD
+    input[Input Reads] --> host[Remove Host DNA\nbowtie2]
+    host --> kraken[Known Virus Detection\nKraken2]
+    kraken --> diamond[Sensitive Viral Detection\nDIAMOND]
+    diamond --> spades[Viral Assembly\nmetaSPAdes]
+    spades --> contigs[Assembly Contigs]
+    contigs --> virsorter[Viral Contig Identification\nVirSorter2]
+    virsorter --> viral_contigs[Viral Contigs]
+    viral_contigs --> checkv[Viral Quality Control\nCheckV]
+    checkv --> high_quality[High-Quality Viral Contigs]
+    high_quality --> pharokka[Viral Annotation\nPharokka]
+    high_quality --> vcontact[Novelty Assessment\nvConTACT2]
+    
+    style input fill:#d9f7be,stroke:#389e0d
+    style host fill:#d6e4ff,stroke:#1d39c4
+    style kraken fill:#d6e4ff,stroke:#1d39c4
+    style diamond fill:#d6e4ff,stroke:#1d39c4
+    style spades fill:#d6e4ff,stroke:#1d39c4
+    style contigs fill:#ffe7ba,stroke:#fa8c16
+    style virsorter fill:#d6e4ff,stroke:#1d39c4
+    style viral_contigs fill:#ffe7ba,stroke:#fa8c16
+    style checkv fill:#d6e4ff,stroke:#1d39c4
+    style high_quality fill:#ffe7ba,stroke:#fa8c16
+    style pharokka fill:#d6e4ff,stroke:#1d39c4
+    style vcontact fill:#d6e4ff,stroke:#1d39c4

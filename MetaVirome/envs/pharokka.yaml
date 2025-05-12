@@ -1,0 +1,13 @@
+name: pharokka
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - pharokka=1.4.0
+  - mmseqs2=14.7e284
+  - prodigal=2.6.3
+  - hmmer=3.3.2
+  - blast=2.14.1
+  - python=3.10
+  - biopython=1.81

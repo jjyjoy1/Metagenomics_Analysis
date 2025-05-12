@@ -1,0 +1,496 @@
+# Snakefile for Metagenomics Analysis Pipeline
+# Author: Claude
+# Date: 2025-05-09
+
+import os
+from os.path import join
+
+# Configuration
+configfile: "config.yaml"
+
+# Directories
+OUTDIR = config["outdir"]
+LOGDIR = join(OUTDIR, "logs")
+
+# Input samples
+SAMPLES = config["samples"]
+FORWARD_READS = {sample: config["samples"][sample]["R1"] for sample in SAMPLES}
+REVERSE_READS = {sample: config["samples"][sample]["R2"] for sample in SAMPLES}
+
+# Reference genomes for host removal
+HOST_GENOME = config["host_genome"]
+
+# Results directories
+FASTP_DIR = join(OUTDIR, "01_fastp")
+HOSTFREE_DIR = join(OUTDIR, "02_hostfree")
+KRAKEN_DIR = join(OUTDIR, "03_kraken")
+BRACKEN_DIR = join(OUTDIR, "04_bracken")
+HUMANN_DIR = join(OUTDIR, "05_humann")
+ASSEMBLY_DIR = join(OUTDIR, "06_megahit")
+BINNING_DIR = join(OUTDIR, "07_binning")
+DASTOOL_DIR = join(OUTDIR, "08_dastool")
+CHECKM_DIR = join(OUTDIR, "09_checkm")
+GTDBTK_DIR = join(OUTDIR, "10_gtdbtk")
+PROKKA_DIR = join(OUTDIR, "11_prokka")
+DRAM_DIR = join(OUTDIR, "12_dram")
+
+# Create output directories
+for dir in [OUTDIR, LOGDIR, FASTP_DIR, HOSTFREE_DIR, KRAKEN_DIR, BRACKEN_DIR, 
+           HUMANN_DIR, ASSEMBLY_DIR, BINNING_DIR, DASTOOL_DIR, CHECKM_DIR, 
+           GTDBTK_DIR, PROKKA_DIR, DRAM_DIR]:
+    os.makedirs(dir, exist_ok=True)
+
+# Final outputs to track
+rule all:
+    input:
+        # QC reports
+        expand(join(FASTP_DIR, "{sample}.fastp.html"), sample=SAMPLES),
+        
+        # Host-free reads
+        expand(join(HOSTFREE_DIR, "{sample}.hostfree.R1.fastq.gz"), sample=SAMPLES),
+        expand(join(HOSTFREE_DIR, "{sample}.hostfree.R2.fastq.gz"), sample=SAMPLES),
+        
+        # Taxonomic profiling
+        expand(join(KRAKEN_DIR, "{sample}.kraken.report"), sample=SAMPLES),
+        expand(join(BRACKEN_DIR, "{sample}.bracken.species.txt"), sample=SAMPLES),
+        
+        # Functional profiling
+        expand(join(HUMANN_DIR, "{sample}_genefamilies.tsv"), sample=SAMPLES),
+        expand(join(HUMANN_DIR, "{sample}_pathabundance.tsv"), sample=SAMPLES),
+        
+        # Assembly and binning
+        expand(join(ASSEMBLY_DIR, "{sample}_final.contigs.fa"), sample=SAMPLES),
+        expand(join(DASTOOL_DIR, "{sample}_DASTool_bins"), sample=SAMPLES),
+        
+        # Bin quality and taxonomy
+        join(CHECKM_DIR, "quality_report.tsv"),
+        join(GTDBTK_DIR, "gtdbtk.summary.tsv"),
+        
+        # Bin annotation
+        join(DRAM_DIR, "distill", "product.html")
+
+# 1. Quality Control and Trimming with Fastp
+rule fastp:
+    input:
+        r1 = lambda wildcards: FORWARD_READS[wildcards.sample],
+        r2 = lambda wildcards: REVERSE_READS[wildcards.sample]
+    output:
+        r1 = join(FASTP_DIR, "{sample}.trimmed.R1.fastq.gz"),
+        r2 = join(FASTP_DIR, "{sample}.trimmed.R2.fastq.gz"),
+        html = join(FASTP_DIR, "{sample}.fastp.html"),
+        json = join(FASTP_DIR, "{sample}.fastp.json")
+    log:
+        join(LOGDIR, "fastp_{sample}.log")
+    threads: config["threads"]["fastp"]
+    resources:
+        mem_mb = config["memory"]["fastp"]
+    shell:
+        """
+        fastp --in1 {input.r1} --in2 {input.r2} \
+              --out1 {output.r1} --out2 {output.r2} \
+              --html {output.html} --json {output.json} \
+              --detect_adapter_for_pe \
+              --cut_front --cut_tail \
+              --qualified_quality_phred 20 \
+              --length_required 50 \
+              --thread {threads} \
+              2> {log}
+        """
+
+# 2. Host Read Removal with Bowtie2
+rule bowtie2_host_removal:
+    input:
+        r1 = join(FASTP_DIR, "{sample}.trimmed.R1.fastq.gz"),
+        r2 = join(FASTP_DIR, "{sample}.trimmed.R2.fastq.gz"),
+        index = HOST_GENOME
+    output:
+        r1 = join(HOSTFREE_DIR, "{sample}.hostfree.R1.fastq.gz"),
+        r2 = join(HOSTFREE_DIR, "{sample}.hostfree.R2.fastq.gz"),
+        sam = temp(join(HOSTFREE_DIR, "{sample}.hostmapped.sam"))
+    log:
+        bowtie = join(LOGDIR, "bowtie2_{sample}.log"),
+        filter = join(LOGDIR, "hostfilter_{sample}.log")
+    threads: config["threads"]["bowtie2"]
+    resources:
+        mem_mb = config["memory"]["bowtie2"]
+    shell:
+        """
+        # Map to host genome
+        bowtie2 -p {threads} -x {input.index} \
+                -1 {input.r1} -2 {input.r2} \
+                --un-conc-gz {HOSTFREE_DIR}/{wildcards.sample}.hostfree.R%.fastq.gz \
+                -S {output.sam} 2> {log.bowtie}
+        
+        # Rename outputs if needed (Bowtie2 uses .1 and .2 suffixes)
+        mv {HOSTFREE_DIR}/{wildcards.sample}.hostfree.R1.fastq.gz {output.r1} 2> {log.filter} || true
+        mv {HOSTFREE_DIR}/{wildcards.sample}.hostfree.R2.fastq.gz {output.r2} 2> {log.filter} || true
+        """
+
+# 3A. Taxonomic Classification with Kraken2
+rule kraken2:
+    input:
+        r1 = join(HOSTFREE_DIR, "{sample}.hostfree.R1.fastq.gz"),
+        r2 = join(HOSTFREE_DIR, "{sample}.hostfree.R2.fastq.gz"),
+        db = config["kraken2_db"]
+    output:
+        report = join(KRAKEN_DIR, "{sample}.kraken.report"),
+        out = join(KRAKEN_DIR, "{sample}.kraken.output")
+    log:
+        join(LOGDIR, "kraken2_{sample}.log")
+    threads: config["threads"]["kraken2"]
+    resources:
+        mem_mb = config["memory"]["kraken2"]
+    shell:
+        """
+        kraken2 --db {input.db} \
+                --paired {input.r1} {input.r2} \
+                --threads {threads} \
+                --report {output.report} \
+                --output {output.out} \
+                2> {log}
+        """
+
+# 3B. Abundance Estimation with Bracken
+rule bracken:
+    input:
+        report = join(KRAKEN_DIR, "{sample}.kraken.report"),
+        db = config["kraken2_db"]
+    output:
+        species = join(BRACKEN_DIR, "{sample}.bracken.species.txt"),
+        genus = join(BRACKEN_DIR, "{sample}.bracken.genus.txt")
+    log:
+        join(LOGDIR, "bracken_{sample}.log")
+    params:
+        read_len = config["bracken_readlen"]
+    shell:
+        """
+        # Species level estimation
+        bracken -d {input.db} \
+                -i {input.report} \
+                -o {output.species} \
+                -r {params.read_len} \
+                -l S 2> {log}
+        
+        # Genus level estimation
+        bracken -d {input.db} \
+                -i {input.report} \
+                -o {output.genus} \
+                -r {params.read_len} \
+                -l G 2>> {log}
+        """
+
+# 4. Functional Profiling with HUMAnN3
+rule humann3:
+    input:
+        r1 = join(HOSTFREE_DIR, "{sample}.hostfree.R1.fastq.gz"),
+        r2 = join(HOSTFREE_DIR, "{sample}.hostfree.R2.fastq.gz")
+    output:
+        genefamilies = join(HUMANN_DIR, "{sample}_genefamilies.tsv"),
+        pathabundance = join(HUMANN_DIR, "{sample}_pathabundance.tsv"),
+        pathcoverage = join(HUMANN_DIR, "{sample}_pathcoverage.tsv")
+    log:
+        join(LOGDIR, "humann3_{sample}.log")
+    params:
+        outdir = HUMANN_DIR,
+        nucleotide_db = config["humann_nucleotide_db"],
+        protein_db = config["humann_protein_db"],
+        threads = config["threads"]["humann3"]
+    resources:
+        mem_mb = config["memory"]["humann3"]
+    shell:
+        """
+        # Cat paired reads for HUMAnN3
+        zcat {input.r1} {input.r2} > {params.outdir}/{wildcards.sample}_concat.fastq
+        
+        # Run HUMAnN3
+        humann --input {params.outdir}/{wildcards.sample}_concat.fastq \
+               --output {params.outdir} \
+               --output-basename {wildcards.sample} \
+               --nucleotide-database {params.nucleotide_db} \
+               --protein-database {params.protein_db} \
+               --threads {params.threads} \
+               --remove-temp-output \
+               2> {log}
+        
+        # Clean up
+        rm {params.outdir}/{wildcards.sample}_concat.fastq
+        """
+
+# 5. Metagenome Assembly with MEGAHIT
+rule megahit:
+    input:
+        r1 = join(HOSTFREE_DIR, "{sample}.hostfree.R1.fastq.gz"),
+        r2 = join(HOSTFREE_DIR, "{sample}.hostfree.R2.fastq.gz")
+    output:
+        contigs = join(ASSEMBLY_DIR, "{sample}_final.contigs.fa")
+    log:
+        join(LOGDIR, "megahit_{sample}.log")
+    params:
+        outdir = join(ASSEMBLY_DIR, "{sample}")
+    threads: config["threads"]["megahit"]
+    resources:
+        mem_mb = config["memory"]["megahit"]
+    shell:
+        """
+        # Remove old assembly if it exists
+        rm -rf {params.outdir}
+        
+        # Run MEGAHIT
+        megahit -1 {input.r1} -2 {input.r2} \
+                -o {params.outdir} \
+                --out-prefix {wildcards.sample} \
+                -t {threads} \
+                --min-contig-len 1000 \
+                2> {log}
+        
+        # Move contigs to expected location
+        cp {params.outdir}/{wildcards.sample}.contigs.fa {output.contigs}
+        """
+
+# 6A. Read mapping for binning with Bowtie2
+rule map_for_binning:
+    input:
+        r1 = join(HOSTFREE_DIR, "{sample}.hostfree.R1.fastq.gz"),
+        r2 = join(HOSTFREE_DIR, "{sample}.hostfree.R2.fastq.gz"),
+        contigs = join(ASSEMBLY_DIR, "{sample}_final.contigs.fa")
+    output:
+        bam = join(BINNING_DIR, "{sample}.mapped.sorted.bam"),
+        bai = join(BINNING_DIR, "{sample}.mapped.sorted.bam.bai")
+    log:
+        bowtie_build = join(LOGDIR, "bowtie_build_{sample}.log"),
+        bowtie_map = join(LOGDIR, "bowtie_map_{sample}.log"),
+        samtools = join(LOGDIR, "samtools_{sample}.log")
+    threads: config["threads"]["binning_map"]
+    resources:
+        mem_mb = config["memory"]["binning_map"]
+    shell:
+        """
+        # Build index for contigs
+        bowtie2-build {input.contigs} {BINNING_DIR}/{wildcards.sample}_contigs 2> {log.bowtie_build}
+        
+        # Map reads to contigs
+        bowtie2 -p {threads} -x {BINNING_DIR}/{wildcards.sample}_contigs \
+                -1 {input.r1} -2 {input.r2} \
+                | samtools view -bS - \
+                | samtools sort -o {output.bam} - \
+                2> {log.bowtie_map}
+        
+        # Index BAM file
+        samtools index {output.bam} 2> {log.samtools}
+        """
+
+# 6B. Genome Binning with MetaBAT2
+rule metabat2:
+    input:
+        contigs = join(ASSEMBLY_DIR, "{sample}_final.contigs.fa"),
+        bam = join(BINNING_DIR, "{sample}.mapped.sorted.bam")
+    output:
+        depth = join(BINNING_DIR, "{sample}.depth.txt"),
+        bindir = directory(join(BINNING_DIR, "{sample}_metabat_bins"))
+    log:
+        depth = join(LOGDIR, "jgi_depth_{sample}.log"),
+        metabat = join(LOGDIR, "metabat_{sample}.log")
+    params:
+        binprefix = join(BINNING_DIR, "{sample}_metabat_bins", "bin")
+    threads: config["threads"]["metabat"]
+    resources:
+        mem_mb = config["memory"]["metabat"]
+    shell:
+        """
+        # Generate depth file
+        jgi_summarize_bam_contig_depths --outputDepth {output.depth} \
+                                         {input.bam} 2> {log.depth}
+        
+        # Create output directory
+        mkdir -p {output.bindir}
+        
+        # Run MetaBAT2
+        metabat2 -i {input.contigs} \
+                 -a {output.depth} \
+                 -o {params.binprefix} \
+                 -t {threads} \
+                 -m 1500 \
+                 --unbinned \
+                 2> {log.metabat}
+        """
+
+# 7. Bin Refinement with DASTool
+rule dastool:
+    input:
+        contigs = join(ASSEMBLY_DIR, "{sample}_final.contigs.fa"),
+        metabat_bins = join(BINNING_DIR, "{sample}_metabat_bins")
+    output:
+        bins = directory(join(DASTOOL_DIR, "{sample}_DASTool_bins")),
+        score = join(DASTOOL_DIR, "{sample}_DASTool_summary.txt")
+    log:
+        join(LOGDIR, "dastool_{sample}.log")
+    params:
+        outprefix = join(DASTOOL_DIR, "{sample}_DASTool"),
+        metabat_tsv = join(DASTOOL_DIR, "{sample}_metabat.scaffolds2bin.tsv")
+    threads: config["threads"]["dastool"]
+    resources:
+        mem_mb = config["memory"]["dastool"]
+    shell:
+        """
+        # Convert MetaBAT2 bins to DAS_Tool format
+        Fasta_to_Scaffolds2Bin.sh -i {input.metabat_bins} -e fa > {params.metabat_tsv}
+        
+        # Run DAS_Tool (only 1 binning tool in this case)
+        DAS_Tool -i {params.metabat_tsv} \
+                 -c {input.contigs} \
+                 -o {params.outprefix} \
+                 -t {threads} \
+                 --write_bins \
+                 --search_engine diamond \
+                 2> {log}
+        
+        # Create output directory if not created by DAS_Tool
+        mkdir -p {output.bins}
+        
+        # Move bins if they exist
+        if [ -d "{params.outprefix}_DASTool_bins" ]; then
+            mv {params.outprefix}_DASTool_bins/* {output.bins}/
+        fi
+        """
+
+# 8. Bin Quality Assessment with CheckM
+rule checkm:
+    input:
+        expand(join(DASTOOL_DIR, "{sample}_DASTool_bins"), sample=SAMPLES)
+    output:
+        report = join(CHECKM_DIR, "quality_report.tsv")
+    log:
+        join(LOGDIR, "checkm.log")
+    params:
+        checkm_output = join(CHECKM_DIR, "checkm_output"),
+        bin_paths = lambda wildcards, input: " ".join(input)
+    threads: config["threads"]["checkm"]
+    resources:
+        mem_mb = config["memory"]["checkm"]
+    shell:
+        """
+        # Create a directory with symlinks to all bins
+        mkdir -p {CHECKM_DIR}/all_bins
+        for bin_dir in {params.bin_paths}; do
+            for bin in $bin_dir/*.fa; do
+                if [ -f "$bin" ]; then
+                    ln -sf $bin {CHECKM_DIR}/all_bins/
+                fi
+            done
+        done
+        
+        # Run CheckM
+        checkm lineage_wf -t {threads} -x fa {CHECKM_DIR}/all_bins {params.checkm_output} 2> {log}
+        
+        # Generate report
+        checkm qa -o 2 -t {threads} --tab_table \
+                 {params.checkm_output}/lineage.ms {params.checkm_output} > {output.report} 2>> {log}
+        """
+
+# 9. Taxonomic Placement with GTDB-Tk
+rule gtdbtk:
+    input:
+        bins = join(CHECKM_DIR, "all_bins"),
+        checkm = join(CHECKM_DIR, "quality_report.tsv")
+    output:
+        summary = join(GTDBTK_DIR, "gtdbtk.summary.tsv")
+    log:
+        join(LOGDIR, "gtdbtk.log")
+    params:
+        outdir = GTDBTK_DIR,
+        gtdb_data = config["gtdbtk_data"]
+    threads: config["threads"]["gtdbtk"]
+    resources:
+        mem_mb = config["memory"]["gtdbtk"]
+    shell:
+        """
+        export GTDBTK_DATA_PATH={params.gtdb_data}
+        
+        # Run GTDB-Tk
+        gtdbtk classify_wf --genome_dir {input.bins} \
+                          --out_dir {params.outdir} \
+                          --extension fa \
+                          --cpus {threads} \
+                          --min_af 0.5 \
+                          --pplacer_cpus {threads} \
+                          2> {log}
+        
+        # Combine results if needed
+        if [ -f "{params.outdir}/classify/gtdbtk.bac120.summary.tsv" ] && [ -f "{params.outdir}/classify/gtdbtk.ar122.summary.tsv" ]; then
+            cat {params.outdir}/classify/gtdbtk.bac120.summary.tsv \
+                {params.outdir}/classify/gtdbtk.ar122.summary.tsv | grep -v "user_genome" > {output.summary}
+        elif [ -f "{params.outdir}/classify/gtdbtk.bac120.summary.tsv" ]; then
+            cp {params.outdir}/classify/gtdbtk.bac120.summary.tsv {output.summary}
+        elif [ -f "{params.outdir}/classify/gtdbtk.ar122.summary.tsv" ]; then
+            cp {params.outdir}/classify/gtdbtk.ar122.summary.tsv {output.summary}
+        else
+            echo "No GTDB-Tk results found" > {output.summary}
+        fi
+        """
+
+# 10. Basic Annotation with Prokka
+rule prokka:
+    input:
+        bins = join(CHECKM_DIR, "all_bins"),
+        checkm = join(CHECKM_DIR, "quality_report.tsv")
+    output:
+        annotations = directory(join(PROKKA_DIR, "annotations"))
+    log:
+        join(LOGDIR, "prokka.log")
+    threads: config["threads"]["prokka"]
+    resources:
+        mem_mb = config["memory"]["prokka"]
+    shell:
+        """
+        mkdir -p {output.annotations}
+        
+        # Run Prokka on each bin
+        for bin in {input.bins}/*.fa; do
+            bin_name=$(basename $bin .fa)
+            
+            prokka --outdir {output.annotations}/$bin_name \
+                   --prefix $bin_name \
+                   --metagenome \
+                   --cpus {threads} \
+                   --force \
+                   $bin \
+                   2>> {log}
+        done
+        """
+
+# 11. Advanced Annotation with DRAM
+rule dram:
+    input:
+        bins = join(CHECKM_DIR, "all_bins"),
+        prokka = join(PROKKA_DIR, "annotations")
+    output:
+        annotations = directory(join(DRAM_DIR, "annotations")),
+        distill = directory(join(DRAM_DIR, "distill")),
+        product_html = join(DRAM_DIR, "distill", "product.html")
+    log:
+        annotate = join(LOGDIR, "dram_annotate.log"),
+        distill = join(LOGDIR, "dram_distill.log")
+    params:
+        dram_config = config["dram_config"]
+    threads: config["threads"]["dram"]
+    resources:
+        mem_mb = config["memory"]["dram"]
+    shell:
+        """
+        # DRAM annotation
+        DRAM.py annotate -i {input.bins} \
+                         -o {output.annotations} \
+                         --threads {threads} \
+                         --min_contig_size 1000 \
+                         --config_loc {params.dram_config} \
+                         2> {log.annotate}
+        
+        # DRAM distill 
+        DRAM.py distill -i {output.annotations}/annotations.tsv \
+                       -o {output.distill} \
+                       --trna_path {output.annotations}/trnas.tsv \
+                       --rrna_path {output.annotations}/rrnas.tsv \
+                       2> {log.distill}
+        """
+
+

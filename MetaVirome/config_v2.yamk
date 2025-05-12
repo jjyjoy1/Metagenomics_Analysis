@@ -1,0 +1,27 @@
+# Configuration file for metagenomics viral detection pipeline
+# Filename: config.yaml
+
+# List of samples to process
+samples:
+  - "sample1"
+  - "sample2"
+  - "sample3"
+
+# Reference databases paths
+host_genome: "/path/to/host/genome/bowtie2_index/host"
+kraken2_db: "/path/to/kraken2/viral_db"
+diamond_viral_db: "/path/to/diamond/viral_protein_db/viral_proteins"
+checkv_db: "/path/to/checkv/db"
+pharokka_db: "/path/to/pharokka/db"
+
+# Assembly options
+use_unclassified_only: False  # Set to True to use only unclassified reads for assembly
+
+# Resource configurations
+max_threads: 32
+max_memory: "128G"
+
+# Parameters
+min_contig_length: 1000
+diamond_evalue: 1e-5
+vs2_min_score: 0.5

@@ -1,0 +1,16 @@
+name: vgas
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pandas=2.0.3
+  - numpy=1.24.3
+  - biopython=1.81
+  - blast=2.14.1
+  - hmmer=3.3.2
+  - prodigal=2.6.3
+  - pip=23.2.1
+  - pip:
+    - vgas==1.1.1

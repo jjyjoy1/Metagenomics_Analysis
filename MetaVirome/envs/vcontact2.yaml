@@ -1,0 +1,13 @@
+name: vcontact2
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - vcontact2=0.9.19
+  - diamond=2.1.8
+  - mcl=14.137
+  - pandas=2.0.3
+  - numpy=1.24.3
+  - biopython=1.81
+

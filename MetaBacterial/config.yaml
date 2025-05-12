@@ -1,0 +1,58 @@
+# Configuration file for Metagenomics Analysis Pipeline
+
+# Output directory
+outdir: "metagenomics_output"
+
+# Define your samples here - replace with your actual file paths
+samples:
+  sample1:
+    R1: "/path/to/sample1_R1.fastq.gz"
+    R2: "/path/to/sample1_R2.fastq.gz"
+  sample2:
+    R1: "/path/to/sample2_R1.fastq.gz"
+    R2: "/path/to/sample2_R2.fastq.gz"
+
+# Host genome for filtering (Bowtie2 index prefix)
+host_genome: "/path/to/host_genome_index/host"
+
+# Database paths
+kraken2_db: "/path/to/kraken2_db"
+humann_nucleotide_db: "/path/to/humann_nucleotide_db"
+humann_protein_db: "/path/to/humann_protein_db"
+gtdbtk_data: "/path/to/gtdbtk_data"
+dram_config: "/path/to/dram/config.ini"
+
+# Bracken read length
+bracken_readlen: 150
+
+# Threads for each tool
+threads:
+  fastp: 8
+  bowtie2: 16
+  binning_map: 16
+  kraken2: 16
+  humann3: 16
+  megahit: 16
+  metabat: 16
+  dastool: 16
+  checkm: 16
+  gtdbtk: 32  # GTDB-Tk needs more resources
+  prokka: 16
+  dram: 16
+
+# Memory requirements in MB
+memory:
+  fastp: 8000
+  bowtie2: 16000
+  binning_map: 16000
+  kraken2: 64000  # Kraken2 can use a lot of memory
+  humann3: 64000
+  megahit: 64000
+  metabat: 16000
+  dastool: 32000
+  checkm: 64000
+  gtdbtk: 128000  # GTDB-Tk needs more memory
+  prokka: 16000
+  dram: 64000
+
+

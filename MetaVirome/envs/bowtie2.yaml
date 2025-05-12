@@ -1,0 +1,9 @@
+name: bowtie2
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - bowtie2=2.5.1
+  - samtools=1.17
+  - pigz=2.6

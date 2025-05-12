@@ -1,0 +1,23 @@
+name: r_stats
+channels:
+  - conda-forge
+  - bioconda
+  - r
+  - defaults
+dependencies:
+  - r-base=4.3.1
+  - r-tidyverse=2.0.0
+  - r-vegan=2.6_4
+  - r-ggplot2=3.4.2
+  - r-reshape2=1.4.4
+  - r-dplyr=1.1.2
+  - r-pheatmap=1.0.12
+  - r-rcolorbrewer=1.1_3
+  - r-viridis=0.6.3
+  - r-ggrepel=0.9.3
+  - r-openxlsx=4.2.5
+  - r-knitr=1.43
+  - r-rmarkdown=2.23
+  - r-dt=0.28
+  - bioconductor-phyloseq=1.44.0
+

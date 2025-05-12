@@ -1,0 +1,13 @@
+name: virsorter2
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - virsorter=2.2.4
+  - hmmer=3.3.2
+  - prodigal=2.6.3
+  - screed=1.0.5
+  - scikit-learn=1.3.0
+  - numpy=1.24.3
+  - pandas=2.0.3
